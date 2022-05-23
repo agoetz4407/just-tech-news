@@ -72,27 +72,8 @@ router.post('/', (req, res) => {
 })
 
 router.put('/upvote', (req, res) => {
-    Vote.create({
-        user_id: req.body.user_id,
-        post_id: req.body.post_id
-    })
-    .then(() => {
-        return Post.findOne({
-            where: {
-                id: req.body.post_id
-            },
-            attributes: [
-                'id',
-                'post_url',
-                'title',
-                'created_at',
-                [
-                    sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'),
-                    'vote_count'
-                ]
-            ]
-        })
-    })
+    //using static upvote method on Vote model
+    Post.upvote(req.body, {Vote})
     .then(dbPostData => res.json(dbPostData))
     .catch(err => {
         console.log(err)
