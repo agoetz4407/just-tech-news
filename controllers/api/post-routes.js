@@ -90,13 +90,15 @@ router.post('/', (req, res) => {
 })
 
 router.put('/upvote', (req, res) => {
-    //using static upvote method on Vote model
-    Post.upvote(req.body, {Vote})
-    .then(dbPostData => res.json(dbPostData))
-    .catch(err => {
-        console.log(err)
-        res.status(400).json(err)
-    })
+    if (req.session) {
+        //using static upvote method on Post model
+        Post.upvote({...req.body, user_id: req.session.user_id}, {Vote, Comment, User})
+        .then(dbPostData => res.json(dbPostData))
+        .catch(err => {
+            console.log(err)
+            res.status(400).json(err)
+        })
+    }
 })
 
 router.put('/:id', (req, res) => {
