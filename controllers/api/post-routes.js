@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const sequelize = require('../../config/connection');
 const { Post, User, Vote, Comment } = require('../../models');
+const checkAuth = require('../../utils/auth');
 
 router.get('/', (req, res) => {
     Post.findAll({
@@ -76,7 +77,7 @@ router.get('/:id', (req, res) => {
     })
 })
 
-router.post('/', (req, res) => {
+router.post('/', checkAuth, (req, res) => {
     Post.create({
         title: req.body.title,
         post_url: req.body.post_url,
@@ -89,7 +90,7 @@ router.post('/', (req, res) => {
     })
 })
 
-router.put('/upvote', (req, res) => {
+router.put('/upvote', checkAuth, (req, res) => {
     if (req.session) {
         //using static upvote method on Post model
         Post.upvote({...req.body, user_id: req.session.user_id}, {Vote, Comment, User})
@@ -101,7 +102,7 @@ router.put('/upvote', (req, res) => {
     }
 })
 
-router.put('/:id', (req, res) => {
+router.put('/:id', checkAuth, (req, res) => {
     Post.update({
         title: req.body.title
     }, {
@@ -122,7 +123,7 @@ router.put('/:id', (req, res) => {
     })
 })
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', checkAuth, (req, res) => {
     Post.destroy({
       where: {
         id: req.params.id
